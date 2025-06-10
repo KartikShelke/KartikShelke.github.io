@@ -1,21 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Welcome to My Portfolio</h1>
-    </header>
-    <section>
-        <h2>About Me</h2>
-        <p>This is where you can write a little about yourself.</p>
-    </section>
-    <footer>
-        <p>Contact: your-email@example.com</p>
-    </footer>
-</body>
-</html>
+🚀 Next Phase: EMI-Oriented Modeling of Buck Converter
+✅ Step 1: Add Parasitic Elements
+Objective: Introduce realistic parasitic components to simulate real-world EMI behavior.
+
+🔹1.1. Add Parasitic Inductance (L_trace)
+Block: Simscape Inductor
+
+Location: In series between MOSFET and diode/load
+
+Value: Start with 10–100 nH (based on PCB trace)
+
+🔹1.2. Add Parasitic Capacitance (C_drain_gnd)
+Block: Capacitor
+
+Location: From MOSFET drain to ground (models drain-to-chassis coupling)
+
+Value: 100 pF – 1 nF
+
+🔹1.3. Optional Parasitic Resistance
+Add Resistor in series with Inductor to model trace resistance.
+
+💡 Note: These parasitics will cause voltage overshoots, ringing, and high-frequency spikes, which are primary sources of EMI.
+
+✅ Step 2: Implement Measurement Points
+Objective: Log switching waveforms for time and frequency analysis.
+
+🔹2.1. Voltage and Current Sensors
+Blocks: Voltage Sensor, Current Sensor from Simscape
+
+Place at:
+
+Switch node (V<sub>sw</sub>)
+
+Input line (for conducted EMI)
+
+Load (for output ripple)
+
+🔹2.2. Ground Connection
+Use Electrical Reference blocks at all nodes
+
+If modeling chassis vs signal ground, separate grounds with small impedance
+
+🔹2.3. Scope + Logging
+Connect Scope or Simulink Data Logger
+
+Use To Workspace block (for FFT analysis)
+
+✅ Step 3: Perform FFT-Based EMI Analysis
+Objective: Convert time-domain switching waveforms into EMI-relevant frequency domain data.
+
+🔹3.1. Powergui Configuration
+Open Powergui → FFT Analysis
+
+Select your V<sub>sw</sub> or I<sub>in</sub> signal
+
+Set frequency resolution: up to 30 MHz
+
+Use Hanning window to reduce leakage
+
+🔹3.2. EMI Spectrum Conversion
+Calculate EMI in dBµV:
+-----------------------------------
+🔹3.3. Plot Spectrum
+Export FFT results and plot:
+
+X-axis: Frequency (log scale)
+
+Y-axis: Amplitude in dBµV
+
+✅ Step 4: EMI Filter Modeling (Initial Phase)
+Objective: Create a basic EMI filter stage to observe suppression.
+
+🔹4.1. Differential Mode (DM) Filter
+X-Capacitor: Capacitor across input V+ and V–
+
+DM Choke: Inductor in series with power path
+
+🔹4.2. Common Mode (CM) Filter (Optional)
+Y-capacitors from input lines to ground
+
+Common mode choke modeled as two coupled inductors (Mutual Inductor)
+
+You can test filter effectiveness by comparing FFT before/after adding them.
+
+✅ Step 5: Compare and Document Results
+5.1. Run simulation for:
+Original (ideal) Buck
+
+Parasitic-added
+
+Filtered version
+
+5.2. Collect:
+Time-domain switching waveforms
+
+Frequency-domain EMI plots
+
+Notes on voltage overshoot, ringing
+
+5.3. Plot Comparison:
+Case	Overshoot	Peak EMI (dBµV)	Notable Features
+Ideal	✖️	Low	Clean transitions
+With Parasitics	✔️	High	Spikes, ringing
+With Filtering	Reduced	Reduced	Smoothed EMI
+
+🗂 Deliverables for this Phase
+Task	Output
+Parasitic Model	Updated .slx file
+Time-Domain Analysis	Voltage & current plots
+EMI Spectrum	FFT plots up to 30 MHz
+Comparison Table	Before/after results
+Summary Report	1–2 page summary of effects
+
+🎯 What’s Next?
+Once this phase is done, you'll be ready for:
+
+Step 6: CISPR EMI standard compliance check
+
+Step 7: EMI Mitigation (snubber, layout, filter tuning)
+
+Step 8: Research Extensions (ML-based EMI prediction, statistical analysis)
+
+
